@@ -1,30 +1,43 @@
+const prisma = require("../configs/prisma");
+const bcrypt = require("bcrypt");
 const createError = require("../utils/createError");
 
-exports.register = (req, res, next) => {
+exports.register = async (req, res, next) => {
 	//code
 	try {
 		//Step 1 req.body
 		const { email, firstName, lastName, password, confirmPassword } = req.body;
-		console.log(email, firstName, lastName, password, confirmPassword);
+
 		//Step 2 validate
-		if (!email) {
-			return createError(400, "Email is require");
-		}
-		if (!firstName) {
-			return createError(400, "First name is require");
-		}
-		if (!lastName) {
-			return createError(400, "Last name is require");
-		}
-		if (!password || !confirmPassword) {
-			return createError(400, "password is require");
-		}
-		if (password !== confirmPassword) {
-			return createError(400, "Please re-enter password");
-		}
+
 		//Step 3 check already
+
+		const checkEmail = await prisma.profile.findFirst({
+			where: {
+				email,
+				firstName,
+				lastName,
+				password,
+			},
+		});
+		console.log(checkEmail);
+		if (checkEmail) {
+			return createError(400, "Email is already exits!!!");
+		}
+
 		// Step 4 Encrypt bcrypt
+		const salt = bcrypt.genSaltSync(10);
+		const hashedPassword = bcrypt.hashSync(password, salt);
+		console.log(hashedPassword);
 		// Step 5 Insert to DB
+		const profile = await prisma.profile.create({
+			data: {
+				email,
+				firstName,
+				lastName,
+				password: hashedPassword,
+			},
+		});
 		// Step 6 Response
 
 		res.json({ message: "Hello register" });
