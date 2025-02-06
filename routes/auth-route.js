@@ -6,6 +6,7 @@ const {
 	registerSchema,
 	loginSchema,
 } = require("../middlewares/validator");
+const { authCheck } = require("../middlewares/auth-middleware");
 
 //@ENDPOINT http://localhost:8000/api/register
 router.post(
@@ -15,5 +16,6 @@ router.post(
 );
 router.post("/login", validateWithZod(loginSchema), authController.login);
 
+router.get("/current-user", authCheck, authController.currentUser);
 //export
 module.exports = router;

@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 //import routing
 const authRouter = require("./routes/auth-route");
+const userRouter = require("./routes/user-route");
 //import middlewares
 const handleError = require("./middlewares/error");
 
@@ -15,7 +16,7 @@ app.use(express.json()); // for read json
 
 //Routing
 app.use("/api", authRouter);
-
+app.use("/api", userRouter);
 //handelError
 app.use(handleError);
 
